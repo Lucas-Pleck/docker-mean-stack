@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  traefik:
+    image: "traefik:v2.5"
+    ports:
+      - "8888:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml
+
+  db:
+    links:
+      - app-back
+    image: "mongo:latest"
+    environment:
+      - MONGO_INITDB_DATABASE=my-db
+      - MONGO_INITDB_DATABASE=tux
+      - MONGO_INITDB_DATABASE=test1234
+    ports:
+      - "27017:27017"
+
+  app-back:
+    build: app-back
+    ports:
+      - "3333:3000"
+    volumes:
+      - ./app-back:/usr/src/app
+
+  app-front:
+    build: ./app-front
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./app-front:/usr/src/app    
+    
